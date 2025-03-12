@@ -53,6 +53,19 @@ def add_product():
             return jsonify({'error': 'Dados inválidos'}), 400
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+    
+@app.route('/api/products/delete/<int:product_id>/', methods=['DELETE'])
+def delete_product(product_id):
+    # Recuperar o produto na base de dados
+    product = Product.query.get(product_id)
+    # Se o produto existe, deleta
+    if product:
+        db.session.delete(product)
+        db.session.commit()
+        return jsonify({'message': 'Produto deletado com sucesso!'})
+    # Se não existe, retorna 404 (Not Found)
+    else:
+        return jsonify({'error': 'Produto não encontrado'}), 404
 
 if __name__ == "__main__":
     app.run(debug=True)
