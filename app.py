@@ -1,5 +1,5 @@
 # Importação
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -42,11 +42,17 @@ def get_products():
 
 @app.route('/api/products/add/', methods=['POST'])
 def add_product():
-    data = request.json
-    product = Product(price=data["price"], name=data["name"], description=data.get("description", ""))
-    db.session.add(product)
-    db.session.commit()
-    return 'Produto cadastrado com sucesso'
+    try:
+        data = request.json
+        if 'name' in data and 'price' in data:
+            product = Product(price=data["price"], name=data["name"], description=data.get("description", ""))
+            db.session.add(product)
+            db.session.commit()
+            return jsonify({'message': 'Produto adicionado com sucesso!'})
+        else:
+            return jsonify({'error': 'Dados inválidos'}), 400
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == "__main__":
     app.run(debug=True)
