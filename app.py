@@ -1,11 +1,14 @@
 # Importação
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS
 
+# Inicialização do Flask
 app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///ecommerce.db' # Configuração do banco de dados
 db = SQLAlchemy(app) # Inicialização do banco de dados
+CORS(app) # Habilita o CORS
 
 # 
 # Modelagem do Banco de Dados
