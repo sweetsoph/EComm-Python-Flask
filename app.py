@@ -36,9 +36,8 @@ def get_products():
             'id': product.id,
             'name': product.name,
             'price': product.price,
-            'description': product.description
         })
-    return products_json
+    return jsonify(products_json)
 
 @app.route('/api/products/add/', methods=['POST'])
 def add_product():
@@ -66,6 +65,40 @@ def delete_product(product_id):
     # Se não existe, retorna 404 (Not Found)
     else:
         return jsonify({'error': 'Produto não encontrado'}), 404
+
+@app.route('/api/products/<int:product_id>/', methods=['GET'])
+def get_product_details(product_id):
+    product = Product.query.get(product_id)
+    if product:
+        return jsonify({
+            'id': product.id,
+            'name': product.name,
+            'price': product.price,
+            'description': product.description
+        })
+    else:
+        return jsonify({'error': 'Produto não encontrado'}), 404
+    
+    
+@app.route('/api/products/update/<int:product_id>/', methods=['PUT'])
+def update_product(product_id):
+    try:
+        product = Product.query.get(product_id)
+        if not product:
+            return jsonify({'error': 'Produto não encontrado'}), 404
+        
+        data = request.json
+        if 'name' in data:
+            product.name = data['name']
+        if 'price' in data:
+            product.price = data['price']
+        if 'description' in data:
+            product.description = data['description']
+        
+        db.session.commit()
+        return jsonify({'message': 'Produto atualizado com sucesso!'})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == "__main__":
     app.run(debug=True)
